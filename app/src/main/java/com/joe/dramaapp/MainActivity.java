@@ -14,6 +14,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.joe.dramaapp.bean.DramaBean;
 import com.joe.dramaapp.databinding.ActivityMainBinding;
+import com.joe.dramaapp.db.Drama;
+import com.joe.dramaapp.db.DramaDatabase;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -40,6 +42,17 @@ public class MainActivity extends AppCompatActivity {
         activityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(activityMainBinding.getRoot());
 
+        //RESTFUL API
+        getDramaDataByOkhttp();
+
+        if(alDramaBean != null)
+        {
+            //有資料就塞DB
+            saveToDB(alDramaBean);
+        }
+    }
+
+    private void getDramaDataByOkhttp() {
         //抓戲劇資料
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(getString(R.string.drama_url)).build();
@@ -71,15 +84,31 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
 
-
-
+    private void saveToDB(final ArrayList<DramaBean> alDramaBean) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(DramaBean dramaBean : alDramaBean)
+                {
+                    DramaDatabase.getInstance(MainActivity.this).dramaDao()
+                            .insert(new Drama(dramaBean.getDramaId(), dramaBean.getName(), dramaBean.getTotalViews(),
+                                    dramaBean.getCreatedAt(), dramaBean.getThumbUrl(), dramaBean.getRating()));
+                }
+            }
+        });
     }
 
     private void parseGSON(String json) {
         Gson gson = new Gson();
         alDramaBean = gson.fromJson(json, new TypeToken<ArrayList<DramaBean>>(){}.getType());
 
+        processAdapterViews();
+
+    }
+
+    private void processAdapterViews() {
         DramaAdapter dramaAdapter = new DramaAdapter(this, alDramaBean);
         activityMainBinding.rvDramalist.setAdapter(dramaAdapter);
         activityMainBinding.rvDramalist.setLayoutManager(new LinearLayoutManager(this));

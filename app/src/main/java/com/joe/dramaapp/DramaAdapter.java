@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.joe.dramaapp.bean.DramaBean;
 
 import java.util.ArrayList;
@@ -35,15 +36,19 @@ public class DramaAdapter extends RecyclerView.Adapter<DramaAdapter.DramaViewHol
 
     @Override
     public void onBindViewHolder(@NonNull DramaViewHolder holder, int position) {
-        //  TODO:
-        holder.tvName.setText(alDramaBean.get(position).getName());
-        holder.tvRating.setText(alDramaBean.get(position).getRating());
-        holder.tvCreatedAt.setText(alDramaBean.get(position).getCreatedAt());
+        holder.tvName.setText(String.format(context.getResources().getString(R.string.drama_name), alDramaBean.get(position).getName()));
+        holder.tvRating.setText(String.format(context.getResources().getString(R.string.drama_rating), alDramaBean.get(position).getRating().substring(0, 3)));
+        holder.tvCreatedAt.setText(String.format(context.getResources().getString(R.string.drama_publish_date), alDramaBean.get(position).getCreatedAt().substring(0, 10)));
+        Glide.with(context).load(alDramaBean.get(position).getThumbUrl()).into(holder.ivThumb);
     }
 
     @Override
     public int getItemCount() {
-        return alDramaBean.size();
+        if(alDramaBean != null)
+        {
+            return alDramaBean.size();
+        }
+        return 0;
     }
 
     public class DramaViewHolder extends RecyclerView.ViewHolder
@@ -58,7 +63,7 @@ public class DramaAdapter extends RecyclerView.Adapter<DramaAdapter.DramaViewHol
             tvName = itemView.findViewById(R.id.tvName);
             tvRating = itemView.findViewById(R.id.tvRating);
             tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
-            //TODO: 圖片
+            ivThumb = itemView.findViewById(R.id.iv_thumb);
         }
     }
 }
