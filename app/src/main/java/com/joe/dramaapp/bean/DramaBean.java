@@ -2,10 +2,12 @@ package com.joe.dramaapp.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * author: Joe Cheng
  */
-public class DramaBean {
+public class DramaBean implements Serializable {
     @SerializedName("drama_id")
     private String DramaId;
 

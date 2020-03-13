@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,10 +22,12 @@ import java.util.ArrayList;
 public class DramaAdapter extends RecyclerView.Adapter<DramaAdapter.DramaViewHolder> {
     Context context;
     ArrayList<DramaBean> alDramaBean;
+    OnClickItemListener mListener;
 
-    public DramaAdapter(Context context, ArrayList<DramaBean> alDramaBean) {
+    public DramaAdapter(Context context, ArrayList<DramaBean> alDramaBean, OnClickItemListener listener) {
         this.context = context;
         this.alDramaBean = alDramaBean;
+        this.mListener = listener;
     }
 
     @NonNull
@@ -35,11 +38,19 @@ public class DramaAdapter extends RecyclerView.Adapter<DramaAdapter.DramaViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DramaViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DramaViewHolder holder, final int position) {
         holder.tvName.setText(String.format(context.getResources().getString(R.string.drama_name), alDramaBean.get(position).getName()));
         holder.tvRating.setText(String.format(context.getResources().getString(R.string.drama_rating), alDramaBean.get(position).getRating().substring(0, 3)));
         holder.tvCreatedAt.setText(String.format(context.getResources().getString(R.string.drama_publish_date), alDramaBean.get(position).getCreatedAt().substring(0, 10)));
         Glide.with(context).load(alDramaBean.get(position).getThumbUrl()).into(holder.ivThumb);
+
+        //點擊進入戲劇資訊
+        holder.llDramaItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onClickDramaItem(alDramaBean.get(position));
+            }
+        });
     }
 
     @Override
@@ -57,6 +68,7 @@ public class DramaAdapter extends RecyclerView.Adapter<DramaAdapter.DramaViewHol
         TextView tvRating;
         TextView tvCreatedAt;
         ImageView ivThumb;
+        LinearLayout llDramaItem;
 
         public DramaViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,6 +76,7 @@ public class DramaAdapter extends RecyclerView.Adapter<DramaAdapter.DramaViewHol
             tvRating = itemView.findViewById(R.id.tvRating);
             tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
             ivThumb = itemView.findViewById(R.id.iv_thumb);
+            llDramaItem = itemView.findViewById(R.id.ll_item);
         }
     }
 }

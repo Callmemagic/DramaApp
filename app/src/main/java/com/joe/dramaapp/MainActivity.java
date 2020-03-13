@@ -2,15 +2,12 @@ package com.joe.dramaapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.joe.dramaapp.bean.DramaBean;
 import com.joe.dramaapp.databinding.ActivityMainBinding;
@@ -109,8 +106,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void processAdapterViews() {
-        DramaAdapter dramaAdapter = new DramaAdapter(this, alDramaBean);
+        DramaAdapter dramaAdapter = new DramaAdapter(this, alDramaBean, onClickItemListener);
         activityMainBinding.rvDramalist.setAdapter(dramaAdapter);
+        activityMainBinding.rvDramalist.setHasFixedSize(true);
         activityMainBinding.rvDramalist.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -118,4 +116,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
     }
+
+    OnClickItemListener onClickItemListener = new OnClickItemListener() {
+        @Override
+        public void onClickDramaItem(DramaBean bean) {
+            GoToDramaInfo(bean);
+
+        }
+    };
+
+    private void GoToDramaInfo(DramaBean bean) {
+        Intent intent = new Intent(this, DramaInfoActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("intent_drama_bean", bean);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
 }

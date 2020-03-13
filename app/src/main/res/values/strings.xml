@@ -2,7 +2,9 @@
     <string name="app_name">DramaApp</string>
     <string name="drama_url">https://static.linetv.tw/interview/dramas-sample.json</string>
 
+    <string name="drama_list">戲劇列表</string>
     <string name="drama_name">劇名：%1$s</string>
     <string name="drama_rating">評分：%1$s</string>
     <string name="drama_publish_date">出版日期：%1$s</string>
+    <string name="drama_watch_times">觀看次數：%1$s</string>
 </resources>
