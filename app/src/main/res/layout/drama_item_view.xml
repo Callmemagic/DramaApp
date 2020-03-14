@@ -27,6 +27,7 @@
             android:text="@string/drama_name"
             android:textSize="14sp"
             android:textColor="@color/color_black"
+            style="@style/styleA"
             />
 
         <TextView
@@ -37,6 +38,7 @@
             android:textSize="14sp"
             android:layout_below="@id/tvName"
             android:textColor="@color/color_black"
+            style="@style/styleB"
             />
 
         <TextView
@@ -46,6 +48,7 @@
             android:text="@string/drama_publish_date"
             android:textSize="14sp"
             android:layout_below="@+id/tvRating"
-            android:textColor="@color/color_black"/>
+            android:textColor="@color/color_black"
+            style="@style/styleB"/>
     </RelativeLayout>
 </LinearLayout>

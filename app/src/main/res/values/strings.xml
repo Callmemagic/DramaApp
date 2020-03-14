@@ -2,9 +2,20 @@
     <string name="app_name">DramaApp</string>
     <string name="drama_url">https://static.linetv.tw/interview/dramas-sample.json</string>
 
+    <string name="confirm">確定</string>
+    <string name="cancel">取消</string>
+
     <string name="drama_list">戲劇列表</string>
+    <string name="search_drama">搜尋劇名</string>
     <string name="drama_name">劇名：%1$s</string>
     <string name="drama_rating">評分：%1$s</string>
     <string name="drama_publish_date">出版日期：%1$s</string>
     <string name="drama_watch_times">觀看次數：%1$s</string>
+    <string name="nearly_search">最近搜尋</string>
+    <string name="best_search_result">最佳搜尋結果</string>
+    <string name="no_result">查無資料</string>
+    <string name="connect_author">我要推薦</string>
+
+    <string name="email_title">[DramaApp]親愛的作者你好，我有話要說</string>
+    <string name="email_text">（有任何意見都可以與我分享交流！）</string>
 </resources>

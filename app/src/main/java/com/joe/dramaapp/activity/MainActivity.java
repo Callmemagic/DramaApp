@@ -1,4 +1,4 @@
-package com.joe.dramaapp;
+package com.joe.dramaapp.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -6,13 +6,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.joe.dramaapp.adapter.DramaAdapter;
+import com.joe.dramaapp.Listener.OnClickItemListener;
+import com.joe.dramaapp.R;
 import com.joe.dramaapp.bean.DramaBean;
 import com.joe.dramaapp.databinding.ActivityMainBinding;
 import com.joe.dramaapp.db.Drama;
 import com.joe.dramaapp.db.DramaDatabase;
+import com.joe.dramaapp.manager.DramaManager;
+import com.joe.dramaapp.util.ProgressDialogUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -39,23 +45,51 @@ public class MainActivity extends AppCompatActivity {
         activityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(activityMainBinding.getRoot());
 
+//        if(true == CheckNetwork())
         //RESTFUL API
         getDramaDataByOkhttp();
 
-        if(alDramaBean != null)
-        {
-            //有資料就塞DB
-            saveToDB(alDramaBean);
+        activityMainBinding.ivSearch.setOnClickListener(onClickListener);
+        activityMainBinding.ivRefresh.setOnClickListener(onClickListener);
+    }
+
+    private boolean CheckNetwork() {
+        //TODO:
+//        if()
+        return true;
+    }
+
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId())
+            {
+                case R.id.ivRefresh:
+                    //TODO: 重刷
+                    ProgressDialogUtil.showProgressDialog(MainActivity.this, false);
+                    break;
+
+                case R.id.ivSearch:
+                    GoToSearch();
+                    break;
+
+            }
         }
+    };
+
+    private void GoToSearch() {
+        startActivity(new Intent(this, DramaSearchActivity.class));
     }
 
     private void getDramaDataByOkhttp() {
+        ProgressDialogUtil.showProgressDialog(MainActivity.this, false);
         //抓戲劇資料
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(getString(R.string.drama_url)).build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                ProgressDialogUtil.dismiss();
                 Log.d(TAG, "[RESP]onFailure: " + e.getMessage());
             }
 
@@ -101,6 +135,15 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
         alDramaBean = gson.fromJson(json, new TypeToken<ArrayList<DramaBean>>(){}.getType());
 
+        //存一份後面會用
+        DramaManager.getInstance().setDramaBeanList(alDramaBean);
+
+        if(alDramaBean != null)
+        {
+            //有資料就塞DB
+            saveToDB(alDramaBean);
+        }
+
         processAdapterViews();
 
     }
@@ -110,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
         activityMainBinding.rvDramalist.setAdapter(dramaAdapter);
         activityMainBinding.rvDramalist.setHasFixedSize(true);
         activityMainBinding.rvDramalist.setLayoutManager(new LinearLayoutManager(this));
+
+        ProgressDialogUtil.dismiss();
     }
 
     @Override

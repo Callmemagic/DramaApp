@@ -1,4 +1,4 @@
-package com.joe.dramaapp;
+package com.joe.dramaapp.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.joe.dramaapp.Listener.OnClickItemListener;
+import com.joe.dramaapp.R;
 import com.joe.dramaapp.bean.DramaBean;
 
 import java.util.ArrayList;
