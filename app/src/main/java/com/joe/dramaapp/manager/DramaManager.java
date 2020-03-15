@@ -8,9 +8,11 @@ import java.util.ArrayList;
  * author: Joe Cheng
  */
 public class DramaManager {
+    private static DramaManager mInstance;
+
     private ArrayList<DramaBean> alDramaBean;
     private ArrayList<DramaBean> alFilteredDramaBean;
-    private static DramaManager mInstance;
+//    private String lastDramaKeyword;
 
     public static DramaManager getInstance() {
         if(mInstance == null)
@@ -35,4 +37,12 @@ public class DramaManager {
     public void setAlFilteredDramaBean(ArrayList<DramaBean> alFilteredDramaBean) {
         this.alFilteredDramaBean = alFilteredDramaBean;
     }
+//
+//    public String getLastDramaKeyword() {
+//        return lastDramaKeyword;
+//    }
+//
+//    public void setLastDramaKeyword(String lastDramaKeyword) {
+//        this.lastDramaKeyword = lastDramaKeyword;
+//    }
 }

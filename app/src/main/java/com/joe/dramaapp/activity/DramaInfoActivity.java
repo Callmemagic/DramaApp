@@ -5,12 +5,15 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.joe.dramaapp.R;
 import com.joe.dramaapp.bean.DramaBean;
 import com.joe.dramaapp.databinding.ActivityDramaInfoBinding;
+
+import java.text.DecimalFormat;
+
+import static com.joe.dramaapp.util.ConstantValue.INTENT_KEY_DRAMA_INFO;
 
 /**
  * author: Joe Cheng
@@ -28,7 +31,7 @@ public class DramaInfoActivity extends AppCompatActivity {
         if(getIntent() != null)
         {
             Bundle bundle = getIntent().getExtras();
-            dramaBean = (DramaBean) bundle.getSerializable("intent_drama_bean");
+            dramaBean = (DramaBean) bundle.getSerializable(INTENT_KEY_DRAMA_INFO);
         }
 
         initView();
@@ -38,8 +41,9 @@ public class DramaInfoActivity extends AppCompatActivity {
         Glide.with(this).load(dramaBean.getThumbUrl()).into(activityDramaInfoBinding.imageView);
         activityDramaInfoBinding.tvName.setText(String.format(getString(R.string.drama_name), dramaBean.getName()));
         activityDramaInfoBinding.tvRating.setText(String.format(getString(R.string.drama_rating), dramaBean.getRating().substring(0, 3)));
-        activityDramaInfoBinding.tvCreatedAt.setText(String.format(getString(R.string.drama_publish_date), dramaBean.getCreatedAt()));
-        activityDramaInfoBinding.tvWatchTimes.setText(String.format(getString(R.string.drama_watch_times), dramaBean.getTotalViews()));
+        activityDramaInfoBinding.tvCreatedAt.setText(String.format(getString(R.string.drama_publish_date), dramaBean.getCreatedAt().substring(0, 10)));
+        activityDramaInfoBinding.tvWatchTimes.setText(String.format(getString(R.string.drama_watch_times),
+                new DecimalFormat("#,###.##").format(Long.parseLong(dramaBean.getTotalViews()))));
 
         activityDramaInfoBinding.ivBack.setOnClickListener(mOnClickListener);
     }

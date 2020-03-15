@@ -4,13 +4,15 @@
 
     <string name="confirm">確定</string>
     <string name="cancel">取消</string>
+    <string name="error_network_unavailable">網路錯誤</string>
+    <string name="error_no_internet">未偵測到網路,是否重試</string>
 
     <string name="drama_list">戲劇列表</string>
     <string name="search_drama">搜尋劇名</string>
     <string name="drama_name">劇名：%1$s</string>
     <string name="drama_rating">評分：%1$s</string>
     <string name="drama_publish_date">出版日期：%1$s</string>
-    <string name="drama_watch_times">觀看次數：%1$s</string>
+    <string name="drama_watch_times">觀看次數：%1$s次</string>
     <string name="nearly_search">最近搜尋</string>
     <string name="best_search_result">最佳搜尋結果</string>
     <string name="no_result">查無資料</string>

@@ -2,6 +2,7 @@ package com.joe.dramaapp.activity;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 
@@ -10,12 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.joe.dramaapp.Listener.OnInputKeyword;
+import com.joe.dramaapp.Listener.OnInputKeywordListener;
+import com.joe.dramaapp.Listener.OnResultFragmentReadyListener;
 import com.joe.dramaapp.R;
 import com.joe.dramaapp.bean.DramaBean;
 import com.joe.dramaapp.databinding.ActivityDramaSearchBinding;
 import com.joe.dramaapp.fragment.DramaSearchResultFragment;
 import com.joe.dramaapp.manager.DramaManager;
+import com.joe.dramaapp.util.ConstantValue;
+import com.joe.dramaapp.util.SharedPreferenceUtil;
 
 import java.util.ArrayList;
 
@@ -24,7 +28,7 @@ import java.util.ArrayList;
  */
 public class DramaSearchActivity extends AppCompatActivity {
     ActivityDramaSearchBinding activityDramaSearchBinding;
-    OnInputKeyword onInputKeywordListener;
+    OnInputKeywordListener onInputKeywordListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +57,7 @@ public class DramaSearchActivity extends AppCompatActivity {
                 //根據關鍵字過濾出查詢結果
                 if(s.toString().length() != 0)
                 {
-                    FilterResultByKeyword(s);
+                    FilterResultByKeyword(s.toString());
                 }
                 else
                 {
@@ -66,19 +70,17 @@ public class DramaSearchActivity extends AppCompatActivity {
         activityDramaSearchBinding.etDramaName.addTextChangedListener(textWatcher);
         activityDramaSearchBinding.ivClear.setOnClickListener(mOnClickListener);
 
-        DramaSearchResultFragment dramaSearchResultFragment = DramaSearchResultFragment.getInstance();
+        DramaSearchResultFragment dramaSearchResultFragment = DramaSearchResultFragment.getInstance(mOnFragmentReadyListener);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.fl_result, dramaSearchResultFragment);
         fragmentTransaction.commit();
-
-
     }
 
-    private void FilterResultByKeyword(Editable keyword) {
+    private void FilterResultByKeyword(String keyword) {
         ArrayList<DramaBean> filteredList = new ArrayList<>();
-        String strKeyword = keyword.toString();
+        String strKeyword = keyword;
         ArrayList<DramaBean> alDrama =  DramaManager.getInstance().getDramaBeanList();
         for(DramaBean bean : alDrama)
         {
@@ -108,8 +110,31 @@ public class DramaSearchActivity extends AppCompatActivity {
         }
     };
 
-    public void updateDate(OnInputKeyword onInputKeywordListener)
+    public void updateData(OnInputKeywordListener onInputKeywordListener)
     {
         this.onInputKeywordListener = onInputKeywordListener;
+    }
+
+    OnResultFragmentReadyListener mOnFragmentReadyListener = new OnResultFragmentReadyListener() {
+        @Override
+        public void OnFragmentReady() {
+            String lastKeyword = SharedPreferenceUtil.getInstance(DramaSearchActivity.this).readPref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD);
+            if(lastKeyword != null)
+            {
+                activityDramaSearchBinding.etDramaName.setText(lastKeyword);
+                FilterResultByKeyword(lastKeyword);
+            }
+        }
+    };
+
+    @Override
+    protected void onStop() {
+        //結束前先存SharedPreference
+        String strKeyword = activityDramaSearchBinding.etDramaName.getText().toString();
+        if(!TextUtils.isEmpty(strKeyword))
+        {
+            SharedPreferenceUtil.getInstance(this).writePref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD, strKeyword);
+        }
+        super.onStop();
     }
 }

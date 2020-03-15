@@ -1,13 +1,19 @@
 package com.joe.dramaapp.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.joe.dramaapp.adapter.DramaAdapter;
@@ -18,7 +24,10 @@ import com.joe.dramaapp.databinding.ActivityMainBinding;
 import com.joe.dramaapp.db.Drama;
 import com.joe.dramaapp.db.DramaDatabase;
 import com.joe.dramaapp.manager.DramaManager;
+import com.joe.dramaapp.util.ConstantValue;
+import com.joe.dramaapp.util.CustomDialogUtility;
 import com.joe.dramaapp.util.ProgressDialogUtil;
+import com.joe.dramaapp.util.SharedPreferenceUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -34,6 +43,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.joe.dramaapp.util.ConstantValue.INTENT_KEY_DRAMA_INFO;
+
 public class MainActivity extends AppCompatActivity {
     private final String TAG = MainActivity.class.getSimpleName();
     ActivityMainBinding activityMainBinding;
@@ -45,19 +56,70 @@ public class MainActivity extends AppCompatActivity {
         activityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(activityMainBinding.getRoot());
 
-//        if(true == CheckNetwork())
-        //RESTFUL API
-        getDramaDataByOkhttp();
+        //先檢查網路
+        if(false == CheckNetwork())
+        {
+            //沒有網路就拿DB的
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayList<Drama> arrayList = (ArrayList<Drama>) DramaDatabase.getInstance(MainActivity.this).dramaDao().getAll();
+                    alDramaBean = new ArrayList<>();
+                    for(Drama drama : arrayList)
+                    {
+                        DramaBean dramaBean = new DramaBean(drama.getName(), drama.getRating(),
+                                drama.getCreated_at(), drama.getTotal_views());
+                        alDramaBean.add(dramaBean);
+                    }
+                    DramaManager.getInstance().setDramaBeanList(alDramaBean);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            processAdapterViews();
+                        }
+                    });
+                }
+            }).start();
+        }
 
         activityMainBinding.ivSearch.setOnClickListener(onClickListener);
         activityMainBinding.ivRefresh.setOnClickListener(onClickListener);
     }
 
     private boolean CheckNetwork() {
-        //TODO:
-//        if()
+        if(isNetworkAvailable() == false)
+        {
+            CustomDialogUtility.showDialogWithOKandCancel(this, getString(R.string.error_network_unavailable),
+                    getString(R.string.error_no_internet), new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            switch (which)
+                            {
+                                case POSITIVE:
+                                    CheckNetwork();
+                                    break;
+
+                                case NEGATIVE:
+                                    break;
+                            }
+                        }
+                    });
+            return false;
+        }
+        else
+        {
+            getDramaDataByOkhttp();
+        }
         return true;
     }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -65,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
             switch (v.getId())
             {
                 case R.id.ivRefresh:
-                    //TODO: 重刷
                     ProgressDialogUtil.showProgressDialog(MainActivity.this, false);
+                    getDramaDataByOkhttp();
                     break;
 
                 case R.id.ivSearch:
@@ -115,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+
     }
 
     private void saveToDB(final ArrayList<DramaBean> alDramaBean) {
@@ -128,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                                     dramaBean.getCreatedAt(), dramaBean.getThumbUrl(), dramaBean.getRating()));
                 }
             }
-        });
+        }).start();
     }
 
     private void parseGSON(String json) {
@@ -166,14 +229,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClickDramaItem(DramaBean bean) {
             GoToDramaInfo(bean);
-
         }
     };
 
     private void GoToDramaInfo(DramaBean bean) {
         Intent intent = new Intent(this, DramaInfoActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("intent_drama_bean", bean);
+        bundle.putSerializable(INTENT_KEY_DRAMA_INFO, bean);
         intent.putExtras(bundle);
         startActivity(intent);
     }

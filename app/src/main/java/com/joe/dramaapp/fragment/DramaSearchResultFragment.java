@@ -13,9 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.joe.dramaapp.ConstantValue;
-import com.joe.dramaapp.Listener.OnInputKeyword;
+import com.joe.dramaapp.Listener.OnResultFragmentReadyListener;
+import com.joe.dramaapp.util.ConstantValue;
+import com.joe.dramaapp.Listener.OnClickItemListener;
+import com.joe.dramaapp.Listener.OnInputKeywordListener;
 import com.joe.dramaapp.R;
+import com.joe.dramaapp.activity.DramaInfoActivity;
 import com.joe.dramaapp.activity.DramaSearchActivity;
 import com.joe.dramaapp.adapter.DramaSearchAdapter;
 import com.joe.dramaapp.bean.DramaBean;
@@ -33,11 +36,13 @@ public class DramaSearchResultFragment extends Fragment {
     ArrayList<DramaBean> alDramaBean;
     DramaSearchAdapter dramaSearchAdapter;
     Context context;
+    static OnResultFragmentReadyListener mOnResultFragmentReadyListener;
 
-    public static DramaSearchResultFragment getInstance() {
+    public static DramaSearchResultFragment getInstance(OnResultFragmentReadyListener onResultFragmentReadyListener) {
         if(instance == null)
         {
             instance = new DramaSearchResultFragment();
+            mOnResultFragmentReadyListener = onResultFragmentReadyListener;
         }
         return instance;
     }
@@ -45,6 +50,7 @@ public class DramaSearchResultFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((DramaSearchActivity)getActivity()).updateData(onInputKeywordListener);
     }
 
     @Nullable
@@ -52,17 +58,17 @@ public class DramaSearchResultFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         dramaSearchResultBinding = ActivityDramaSearchResultBinding.inflate(getLayoutInflater(), container, false);
 
-        dramaSearchAdapter = new DramaSearchAdapter(context, alDramaBean);
+        dramaSearchAdapter = new DramaSearchAdapter(context, alDramaBean, onClickItemListener);
         dramaSearchResultBinding.rvSearchResult.setAdapter(dramaSearchAdapter);
         dramaSearchResultBinding.rvSearchResult.setLayoutManager(new LinearLayoutManager(context));
         dramaSearchResultBinding.btnConnectAuthor.setOnClickListener(mOnClickListener);
 
-        ((DramaSearchActivity)getActivity()).updateDate(onInputKeywordListener);
+        mOnResultFragmentReadyListener.OnFragmentReady();
 
         return dramaSearchResultBinding.getRoot();
     }
 
-    OnInputKeyword onInputKeywordListener = new OnInputKeyword() {
+    OnInputKeywordListener onInputKeywordListener = new OnInputKeywordListener() {
         @Override
         public void OnInputKeywordForSearch(boolean bHasKeyword) {
         ArrayList<DramaBean> dramaBeans = DramaManager.getInstance().getAlFilteredDramaBean();
@@ -110,4 +116,15 @@ public class DramaSearchResultFragment extends Fragment {
         super.onAttach(context);
         this.context = context;
     }
+
+    OnClickItemListener onClickItemListener = new OnClickItemListener() {
+        @Override
+        public void onClickDramaItem(DramaBean bean) {
+            Intent intent = new Intent(getContext(), DramaInfoActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ConstantValue.INTENT_KEY_DRAMA_INFO, bean);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
+    };
 }
