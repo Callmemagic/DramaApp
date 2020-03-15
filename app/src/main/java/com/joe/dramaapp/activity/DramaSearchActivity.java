@@ -119,7 +119,7 @@ public class DramaSearchActivity extends AppCompatActivity {
         @Override
         public void OnFragmentReady() {
             String lastKeyword = SharedPreferenceUtil.getInstance(DramaSearchActivity.this).readPref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD);
-            if(lastKeyword != null)
+            if(!TextUtils.isEmpty(lastKeyword))
             {
                 activityDramaSearchBinding.etDramaName.setText(lastKeyword);
                 FilterResultByKeyword(lastKeyword);
@@ -131,10 +131,7 @@ public class DramaSearchActivity extends AppCompatActivity {
     protected void onStop() {
         //結束前先存SharedPreference
         String strKeyword = activityDramaSearchBinding.etDramaName.getText().toString();
-        if(!TextUtils.isEmpty(strKeyword))
-        {
-            SharedPreferenceUtil.getInstance(this).writePref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD, strKeyword);
-        }
+        SharedPreferenceUtil.getInstance(this).writePref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD, strKeyword);
         super.onStop();
     }
 }

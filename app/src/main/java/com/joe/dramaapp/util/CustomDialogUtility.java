@@ -5,10 +5,6 @@ import android.content.Context;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.joe.dramaapp.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-
 public class CustomDialogUtility {
 
     public static void showDialog(Context context, String title, String msg) {
