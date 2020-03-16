@@ -6,6 +6,7 @@
     <string name="cancel">取消</string>
     <string name="error_network_unavailable">網路錯誤</string>
     <string name="error_no_internet">未偵測到網路,是否重試</string>
+    <string name="error_no_data">取得資料失敗</string>
 
     <string name="drama_list">戲劇列表</string>
     <string name="search_drama">搜尋劇名</string>
