@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
  * author: Joe Cheng
  */
 public class DramaSearchActivity extends AppCompatActivity {
+    private static String TAG = DramaSearchActivity.class.getSimpleName();
     ActivityDramaSearchBinding activityDramaSearchBinding;
     OnInputKeywordListener onInputKeywordListener;
 
@@ -121,8 +123,10 @@ public class DramaSearchActivity extends AppCompatActivity {
             String lastKeyword = SharedPreferenceUtil.getInstance(DramaSearchActivity.this).readPref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD);
             if(!TextUtils.isEmpty(lastKeyword))
             {
+                //回復上一次查詢結果
                 activityDramaSearchBinding.etDramaName.setText(lastKeyword);
                 FilterResultByKeyword(lastKeyword);
+                Log.d(TAG, "[回復上次關鍵字]:" + lastKeyword);
             }
         }
     };
@@ -132,6 +136,7 @@ public class DramaSearchActivity extends AppCompatActivity {
         //結束前先存SharedPreference
         String strKeyword = activityDramaSearchBinding.etDramaName.getText().toString();
         SharedPreferenceUtil.getInstance(this).writePref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD, strKeyword);
+        Log.d(TAG, "[保留關鍵字]:" + strKeyword);
         super.onStop();
     }
 }

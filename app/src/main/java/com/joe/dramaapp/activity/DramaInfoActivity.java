@@ -38,7 +38,10 @@ public class DramaInfoActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        Glide.with(this).load(dramaBean.getThumbUrl()).into(activityDramaInfoBinding.imageView);
+        Glide.with(this)
+                .load(dramaBean.getThumbUrl())
+                .error(R.drawable.ic_signal_cellular_connected_no_internet_0_bar_black_24dp)
+                .into(activityDramaInfoBinding.imageView);
         activityDramaInfoBinding.tvName.setText(String.format(getString(R.string.drama_name), dramaBean.getName()));
         activityDramaInfoBinding.tvRating.setText(String.format(getString(R.string.drama_rating), dramaBean.getRating().substring(0, 3)));
         activityDramaInfoBinding.tvCreatedAt.setText(String.format(getString(R.string.drama_publish_date), dramaBean.getCreatedAt().substring(0, 10)));

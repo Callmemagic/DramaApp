@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.joe.dramaapp.adapter.DramaSearchAdapter;
 import com.joe.dramaapp.bean.DramaBean;
 import com.joe.dramaapp.databinding.ActivityDramaSearchResultBinding;
 import com.joe.dramaapp.manager.DramaManager;
+import com.joe.dramaapp.util.SharedPreferenceUtil;
 
 import java.util.ArrayList;
 
@@ -58,7 +60,7 @@ public class DramaSearchResultFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         dramaSearchResultBinding = ActivityDramaSearchResultBinding.inflate(getLayoutInflater(), container, false);
 
-        dramaSearchAdapter = new DramaSearchAdapter(context, alDramaBean, onClickItemListener);
+        dramaSearchAdapter = new DramaSearchAdapter(context, onClickItemListener);
         dramaSearchResultBinding.rvSearchResult.setAdapter(dramaSearchAdapter);
         dramaSearchResultBinding.rvSearchResult.setLayoutManager(new LinearLayoutManager(context));
         dramaSearchResultBinding.btnConnectAuthor.setOnClickListener(mOnClickListener);
@@ -71,8 +73,8 @@ public class DramaSearchResultFragment extends Fragment {
     OnInputKeywordListener onInputKeywordListener = new OnInputKeywordListener() {
         @Override
         public void OnInputKeywordForSearch(boolean bHasKeyword) {
-        ArrayList<DramaBean> dramaBeans = DramaManager.getInstance().getAlFilteredDramaBean();
-        dramaSearchAdapter.updateResult(dramaBeans);
+        alDramaBean = DramaManager.getInstance().getAlFilteredDramaBean();
+        dramaSearchAdapter.updateResult(alDramaBean);
         dramaSearchAdapter.notifyDataSetChanged();
 
             //若沒有關鍵字就沒有資料
@@ -83,7 +85,7 @@ public class DramaSearchResultFragment extends Fragment {
                 return;
             }
 
-            if((dramaBeans == null || dramaBeans.size() == 0))
+            if((alDramaBean == null || alDramaBean.size() == 0))
             {
                 dramaSearchResultBinding.rlNodata.setVisibility(View.VISIBLE);
                 dramaSearchResultBinding.rlResult.setVisibility(View.GONE);
@@ -127,4 +129,30 @@ public class DramaSearchResultFragment extends Fragment {
             startActivity(intent);
         }
     };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("onPause()", "onPause: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("onDestroy()", "onDestroy: ");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("onDestroyView()", "onDestroyView: ");
+    }
+
+    @Override
+    public void onDetach() {
+        SharedPreferenceUtil.getInstance(getContext()).writePref(ConstantValue.PREF_DRAMA, ConstantValue.PREF_KEY_KEYWORD, null);
+        super.onDetach();
+        Log.d("onDetach()", "onDetach: ");
+
+    }
 }

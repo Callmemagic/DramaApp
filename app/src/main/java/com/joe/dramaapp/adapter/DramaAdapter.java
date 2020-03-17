@@ -44,7 +44,10 @@ public class DramaAdapter extends RecyclerView.Adapter<DramaAdapter.DramaViewHol
         holder.tvName.setText(String.format(context.getResources().getString(R.string.drama_name), alDramaBean.get(position).getName()));
         holder.tvRating.setText(String.format(context.getResources().getString(R.string.drama_rating), alDramaBean.get(position).getRating().substring(0, 3)));
         holder.tvCreatedAt.setText(String.format(context.getResources().getString(R.string.drama_publish_date), alDramaBean.get(position).getCreatedAt().substring(0, 10)));
-        Glide.with(context).load(alDramaBean.get(position).getThumbUrl()).into(holder.ivThumb);
+        Glide.with(context)
+                .load(alDramaBean.get(position).getThumbUrl())
+                .error(R.drawable.ic_signal_cellular_connected_no_internet_0_bar_black_24dp)
+                .into(holder.ivThumb);
 
         //點擊進入戲劇資訊
         holder.llDramaItem.setOnClickListener(new View.OnClickListener() {

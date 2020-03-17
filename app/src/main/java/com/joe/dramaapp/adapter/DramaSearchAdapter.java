@@ -27,9 +27,8 @@ public class DramaSearchAdapter extends RecyclerView.Adapter<DramaSearchAdapter.
     Context context;
     ArrayList<DramaBean> alDramaBean;
     OnClickItemListener onClickItemListener;
-    public DramaSearchAdapter(Context context, ArrayList<DramaBean> alDramaBean, OnClickItemListener onClickItemListener) {
+    public DramaSearchAdapter(Context context, OnClickItemListener onClickItemListener) {
         this.context = context;
-        this.alDramaBean = alDramaBean;
         this.onClickItemListener = onClickItemListener;
     }
 
@@ -46,7 +45,10 @@ public class DramaSearchAdapter extends RecyclerView.Adapter<DramaSearchAdapter.
         if(alDramaBean != null && alDramaBean.size() > 0)
         {
             holder.tvName.setText(alDramaBean.get(position).getName());
-            Glide.with(context).load(alDramaBean.get(position).getThumbUrl()).into(holder.ivThumb);
+            Glide.with(context)
+                    .load(alDramaBean.get(position).getThumbUrl())
+                    .error(R.drawable.ic_signal_cellular_connected_no_internet_0_bar_black_24dp)
+                    .into(holder.ivThumb);
             holder.clItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
